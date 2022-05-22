@@ -43,6 +43,34 @@ class Dom {
 
 		return this
 	}
+
+	get data() {
+		return this.$el.dataset
+	}
+
+	closest(selector) {
+		return $(this.$el.closest(selector))
+	}
+
+	getCoords() {
+		return this.$el.getBoundingClientRect()
+	}
+
+	findAll(selector) {
+		return this.$el.querySelectorAll(selector)
+	}
+
+	css(style = {}) {
+		// for (const key in style) {
+		// 	if (Object.hasOwnProperty.call(style, key)) {
+		// 		this.$el.style[key] = style[key]
+		// 	}
+		// }
+
+		Object.keys(style).forEach(key => {
+			return this.$el.style[key] = style[key]
+		})
+	}
 }
 
 export function $(selector) {
