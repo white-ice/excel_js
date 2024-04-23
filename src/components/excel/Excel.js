@@ -1,34 +1,42 @@
-import { $ } from "../../core/dom"
+import { Emmiter } from "../../core/Emitter";
+import { $ } from "../../core/dom";
 
 export class Excel {
+  constructor(selector, options) {
+    this.$el = $(selector);
+    this.components = options.components || [];
+    this.emitter = new Emmiter();
+  }
 
-	constructor(selector, options) {
-		this.$el = $(selector)
-		this.components = options.components || []
-	}
+  getRoot() {
+    const $root = $.create("div", "excel");
 
-	getRoot() {
-		const $root = $.create('div', 'excel')
+    this.components = this.components.map((Component) => {
+      const $el = $.create("div", Component.className);
+      const component = new Component($el, {
+        emitter: this.emitter,
+      });
 
-		this.components = this.components.map(Component => {
-			const $el = $.create('div', Component.className)
-			const component = new Component($el)
+      $el.html(component.toHTML());
+      $root.append($el);
 
-			$el.html(component.toHTML())
-			$root.append($el)
+      return component;
+    });
 
-			return component
-		});
+    return $root;
+  }
 
-		return $root
-	}
+  rendor() {
+    // * this.$el.insertAdjacentHTML('afterbegin', `<h1>Test</h1>`)
+    // ! Render DOM elements
+    this.$el.append(this.getRoot());
 
-	rendor() {
-		// * this.$el.insertAdjacentHTML('afterbegin', `<h1>Test</h1>`)
-		// ! Render DOM elements
-		this.$el.append(this.getRoot())
+    // ! Add event listeners
+    this.components.forEach((component) => component.init());
+  }
 
-		// ! Add event listeners
-		this.components.forEach(component => component.init());
-	}
+  destroy() {
+    this.components.forEach((component) => component.destroy());
+    // this.$el.remove();
+  }
 }

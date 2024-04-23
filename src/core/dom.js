@@ -1,92 +1,134 @@
 class Dom {
-	constructor(selector) {
-		this.$el = typeof selector === 'string'
-			? document.querySelector(selector)
-			: selector
-	}
+  constructor(selector) {
+    this.$el =
+      typeof selector === "string"
+        ? document.querySelector(selector)
+        : selector;
+  }
 
-	html(html) {
-		if (typeof html === 'string') {
+  html(html) {
+    if (typeof html === "string") {
+      // додавання елемента в дом
+      this.$el.innerHTML = html;
 
-			this.$el.innerHTML = html
+      return this;
+    }
+    // повертає улемент та видаляє пробіли
+    return this.$el.outerHTML.trim();
+  }
 
-			return this
-		}
+  text(text) {
+    if (typeof text !== "undefined") {
+      this.$el.textContent = text;
+      return this;
+    }
+    if (this.$el.tagName.toLowerCase() === "input") {
+      return this.$el.value.trim();
+    }
+    return this.$el.textContent.trim();
+  }
 
-		return this.$el.outerHTML.trim()
-	}
+  clear() {
+    this.html("");
 
-	clear() {
-		this.html('')
+    return this;
+  }
 
-		return this
-	}
+  on(eventType, callback) {
+    this.$el.addEventListener(eventType, callback);
 
-	on(eventType, callback) {
-		this.$el.addEventListener(eventType, callback)
-	}
+    return this;
+  }
 
-	off(eventType, callback) {
-		this.$el.removeEventListener(eventType, callback)
-	}
+  off(eventType, callback) {
+    this.$el.removeEventListener(eventType, callback);
 
-	append(node) {
-		if (node instanceof Dom) {
-			node = node.$el
-		}
+    return this;
+  }
 
-		if (Element.prototype.append) {
-			this.$el.append(node)
-		} else {
-			this.$el.appendChild(node)
-		}
+  find(selector) {
+    return $(this.$el.querySelector(selector));
+  }
 
-		return this
-	}
+  append(node) {
+    if (node instanceof Dom) {
+      node = node.$el;
+    }
 
-	get data() {
-		return this.$el.dataset
-	}
+    if (Element.prototype.append) {
+      this.$el.append(node);
+    } else {
+      this.$el.appendChild(node);
+    }
 
-	closest(selector) {
-		return $(this.$el.closest(selector))
-	}
+    return this;
+  }
 
-	getCoords() {
-		return this.$el.getBoundingClientRect()
-	}
+  get data() {
+    return this.$el.dataset;
+  }
 
-	findAll(selector) {
-		return this.$el.querySelectorAll(selector)
-	}
+  closest(selector) {
+    return $(this.$el.closest(selector));
+  }
 
-	css(style = {}) {
-		// for (const key in style) {
-		// 	if (Object.hasOwnProperty.call(style, key)) {
-		// 		this.$el.style[key] = style[key]
-		// 	}
-		// }
+  getCoords() {
+    return this.$el.getBoundingClientRect();
+  }
 
-		Object.keys(style).forEach(key => {
-			return this.$el.style[key] = style[key]
-		})
-	}
+  findAll(selector) {
+    return this.$el.querySelectorAll(selector);
+  }
+
+  css(style = {}) {
+    // for (const key in style) {
+    // 	if (Object.hasOwnProperty.call(style, key)) {
+    // 		this.$el.style[key] = style[key]
+    // 	}
+    // }
+
+    Object.keys(style).forEach((key) => {
+      return (this.$el.style[key] = style[key]);
+    });
+  }
+
+  id(parse) {
+    if (parse) {
+      const parsed = this.id().split(":");
+      return {
+        row: +parsed[0],
+        col: +parsed[1],
+      };
+    }
+    return this.data.id;
+  }
+
+  focus() {
+    this.$el.focus();
+    return this;
+  }
+
+  addClass(className) {
+    this.$el.classList.add(className);
+    return this;
+  }
+
+  removeClass(className) {
+    this.$el.classList.remove(className);
+    return this;
+  }
 }
 
 export function $(selector) {
-
-	return new Dom(selector)
-
+  return new Dom(selector);
 }
 
-$.create = (tagName, classes = '') => {
-	const el = document.createElement(tagName)
+$.create = (tagName, classes = "") => {
+  const el = document.createElement(tagName);
 
-	if (classes) {
+  if (classes) {
+    el.classList.add(classes);
+  }
 
-		el.classList.add(classes)
-
-	}
-
-	return $(el)
-}
+  return $(el);
+};
